@@ -1,10 +1,11 @@
-package com.dogparkhomes.api.dto;
+package com.dogparkhomes.api.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Getter
 @Setter

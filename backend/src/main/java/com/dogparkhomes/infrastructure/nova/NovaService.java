@@ -7,7 +7,7 @@ import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelRequest;
 import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.dogparkhomes.api.dto.SearchFiltersDto;
+import com.dogparkhomes.api.dto.response.SearchFiltersDto;
 
 import java.nio.charset.StandardCharsets;
 
