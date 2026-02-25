@@ -1,0 +1,31 @@
+# Maven / Java
+target/
+*.log
+*.tmp
+*.out
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+/backend/target/
+
+# Local data (images, caches, etc.)
+data/
+*.local.json
+
+# Environment / credentials (set via env vars or secret manager instead)
+.env
+.env.*
+*.credentials.json
+aws-credentials.txt
+
