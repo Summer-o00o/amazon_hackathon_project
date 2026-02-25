@@ -2,6 +2,7 @@ package com.dogparkhomes.infrastructure.google;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,8 +12,8 @@ public class GooglePlacesService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // TODO: move to application.properties
-    private final String API_KEY = "AIzaSyDXnr-0m8TMs0I8hlDMO7xF1qdi52kiLb8";
+    @Value("${google.places.api-key}")
+    private String apiKey;
 
     public JsonNode searchDogParks(String location) {
 
@@ -26,7 +27,7 @@ public class GooglePlacesService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Goog-Api-Key", API_KEY);
+        headers.set("X-Goog-Api-Key", apiKey);
         headers.set("X-Goog-FieldMask", "places.displayName,places.formattedAddress,places.location");
 
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);

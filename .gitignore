@@ -28,4 +28,6 @@ data/
 .env.*
 *.credentials.json
 aws-credentials.txt
+# Local override with real API keys (never commit)
+**/application-local.properties
 

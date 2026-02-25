@@ -23,6 +23,17 @@ public class NovaService {
     public SearchFiltersDto parseUserQuery(String query) {
 
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            String prompt = """
+                    You are a real estate search assistant. Extract structured search filters from the user query. \
+                    Return ONLY valid JSON with exactly these field names (no other names): location, property_type, amenities, price_range. \
+                    Use "amenities" for any amenity list (not nearby_amenities or similar). Do not explain. \
+                    User query: %s
+                    """.formatted(query);
+
+            // JSON-escape the prompt so that any quotes/newlines in the user query don't break the request body
+            String promptJsonString = mapper.writeValueAsString(prompt);
+
             String requestBody = """
             {
               "messages": [
@@ -30,7 +41,7 @@ public class NovaService {
                   "role": "user",
                   "content": [
                     {
-                      "text": "You are a real estate search assistant. Extract structured search filters from the user query. Return ONLY JSON. Do not explain. User query: %s"
+                      "text": %s
                     }
                   ]
                 }
@@ -40,7 +51,7 @@ public class NovaService {
                 "temperature": 0.1
               }
             }
-            """.formatted(query);
+            """.formatted(promptJsonString);
 
             InvokeModelRequest request = InvokeModelRequest.builder()
                     .modelId("us.amazon.nova-2-lite-v1:0")
@@ -53,7 +64,6 @@ public class NovaService {
 
             String raw = response.body().asUtf8String();
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(raw);
 
             String text = root

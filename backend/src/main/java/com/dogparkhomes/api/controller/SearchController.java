@@ -30,7 +30,15 @@ public class SearchController {
         // call Google Places API
         JsonNode dogParks = googlePlacesService.searchDogParks(filters.getLocation());
 
-        System.out.println("Dog parks response: " + dogParks.toString());
+        JsonNode places = dogParks.get("places");
+
+        JsonNode firstPark = places.get(0);
+
+        double lat = firstPark.get("location").get("latitude").asDouble();
+        double lng = firstPark.get("location").get("longitude").asDouble();
+
+        System.out.println("First dog park latitude: " + lat);
+        System.out.println("First dog park longitude: " + lng);
 
         return filters;
     }
