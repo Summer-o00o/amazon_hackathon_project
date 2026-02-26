@@ -57,12 +57,23 @@ public class GooglePlacesService {
             List<DogParkDto> parks = new ArrayList<>();
         
             for (JsonNode place : root.path("places")) {
-                String placeId = place.path("id").asText();
-                List<String> reviews = getReviews(placeId);
-                System.out.println("Place ID: " + placeId);
+                if(parks.size() >= 5) {
+                    break;
+                }
 
                 DogParkDto dto = new DogParkDto();
-        
+                
+                dto.setRating(
+                    place.path("rating").asDouble(0)
+                );
+                // filter rating >= 4.8
+                if (dto.getRating() < 4.8) {
+                    continue;
+                }
+                
+                String placeId = place.path("id").asText();
+                List<String> reviews = getReviews(placeId);
+
                 dto.setName(
                     place.path("displayName").path("text").asText()
                 );
@@ -79,32 +90,26 @@ public class GooglePlacesService {
                     place.path("location").path("longitude").asDouble()
                 );
         
-                dto.setRating(
-                    place.path("rating").asDouble(0)
-                );
         
                 dto.setUserRatingCount(
                     place.path("userRatingCount").asInt(0)
                 );
                 dto.setReviews(reviews);
                 dto.setAnalysis(
-                    novaService.analyzeDogParkReviews(reviews)
+                    novaService.analyzeDogParkReviews(placeId, reviews)
                 );
         
                 parks.add(dto);
             }
         
-            // filter rating >= 4.8
-            parks.removeIf(p -> p.getRating() < 4.8);
-        
             // sort by rating desc
-            parks.sort(
-                Comparator.comparingDouble(DogParkDto::getRating)
-                    .reversed()
-            );
+            // parks.sort(
+            //     Comparator.comparingDouble(DogParkDto::getRating)
+            //         .reversed()
+            // );
         
             // return top 5 to test the response
-            return parks.stream().limit(5).toList();
+            return parks.stream().toList();
         
         } catch (Exception e) {
         

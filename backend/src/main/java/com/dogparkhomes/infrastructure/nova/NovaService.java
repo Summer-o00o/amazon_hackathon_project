@@ -11,6 +11,7 @@ import com.dogparkhomes.api.dto.response.SearchFiltersDto;
 import java.util.List;
 import com.dogparkhomes.api.dto.response.DogParkAnalysisDto;
 import java.nio.charset.StandardCharsets;
+import org.springframework.cache.annotation.Cacheable;
 
 @Service
 public class NovaService {
@@ -92,8 +93,12 @@ public class NovaService {
 
 
     //analyze the dog park reviews and return the scores
-    public DogParkAnalysisDto analyzeDogParkReviews(List<String> reviews) {
-
+    @Cacheable(
+    value = "dogpark-analysis",
+    key = "#placeId"
+    )
+    public DogParkAnalysisDto analyzeDogParkReviews(String placeId, List<String> reviews) {
+        System.out.println("Calling Nova API..." + placeId);
         try {
     
             ObjectMapper mapper = new ObjectMapper();
