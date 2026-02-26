@@ -1,5 +1,7 @@
 package com.dogparkhomes.api.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +17,15 @@ public class ListingResponseDto {
 
     private double bathrooms;
 
-    // private int squareFootage;
+    @JsonIgnore
+    private double latitude;
 
-    // private String propertyType;
+    @JsonIgnore
+    private double longitude;
+
+    private String nearestDogParkName;
+
+    private double nearestDogParkRating;
+
+    private double distanceToDogPark;
 }

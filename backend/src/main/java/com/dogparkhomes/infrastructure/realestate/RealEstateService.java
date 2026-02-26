@@ -11,7 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import com.dogparkhomes.util.DistanceUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class RealEstateService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public List<ListingResponseDto> searchHouses(List<DogParkDto> dogParks, double radiusMiles) {
-        List<ListingResponseDto> listings = new ArrayList<>();
+        List<ListingResponseDto> allListings = new ArrayList<>();
         for (DogParkDto dogPark : dogParks) {
             String url = String.format(
                     "https://api.rentcast.io/v1/listings/sale?latitude=%f&longitude=%f&radius=%f",
@@ -47,9 +47,18 @@ public class RealEstateService {
             );
 
             String body = response.getBody();
-            listings.addAll(parseListings(body));
+            List<ListingResponseDto> listings = parseListings(body);
+            for (ListingResponseDto listing : listings) {
+                double distanceMiles = DistanceUtil.haversineMiles(listing.getLatitude(), listing.getLongitude(), dogPark.getLatitude(), dogPark.getLongitude());
+                if (distanceMiles <= radiusMiles) {
+                    listing.setNearestDogParkName(dogPark.getName());
+                    listing.setNearestDogParkRating(dogPark.getRating());
+                    listing.setDistanceToDogPark(distanceMiles);
+                    allListings.add(listing);
+                }
+            }
         }
-        return listings;
+        return allListings;
     }
 
     private List<ListingResponseDto> parseListings(String json) {
@@ -62,6 +71,8 @@ public class RealEstateService {
                 dto.setPrice(node.path("price").asDouble());
                 dto.setBedrooms(node.path("bedrooms").asInt());
                 dto.setBathrooms(node.path("bathrooms").asDouble());
+                dto.setLatitude(node.path("latitude").asDouble());
+                dto.setLongitude(node.path("longitude").asDouble());
                 listings.add(dto);
             }
         } catch (Exception e) {
