@@ -1,14 +1,16 @@
 package com.dogparkhomes.api.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
-import com.dogparkhomes.api.dto.response.DogParkAnalysisDto;
 
 @Getter
 @Setter
 public class DogParkDto {
 
+    @JsonIgnore
+    private String placeId;
     private String name;
     private String address;
     private double latitude;

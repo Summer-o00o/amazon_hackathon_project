@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 import com.dogparkhomes.api.dto.response.DogParkDto;
 import com.dogparkhomes.infrastructure.nova.NovaService;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -24,6 +23,7 @@ public class GooglePlacesService {
     public GooglePlacesService(NovaService novaService) {
         this.novaService = novaService;
     }
+
     public List<DogParkDto> searchDogParks(String location) {
 
         String url = "https://places.googleapis.com/v1/places:searchText";
@@ -51,18 +51,16 @@ public class GooglePlacesService {
         try {
 
             ObjectMapper mapper = new ObjectMapper();
-        
             JsonNode root = mapper.readTree(response.getBody());
-        
             List<DogParkDto> parks = new ArrayList<>();
-        
+
             for (JsonNode place : root.path("places")) {
-                if(parks.size() >= 5) {
+                if (parks.size() >= 1) {
                     break;
                 }
 
                 DogParkDto dto = new DogParkDto();
-                
+
                 dto.setRating(
                     place.path("rating").asDouble(0)
                 );
@@ -70,27 +68,26 @@ public class GooglePlacesService {
                 if (dto.getRating() < 4.8) {
                     continue;
                 }
-                
+
                 String placeId = place.path("id").asText();
                 List<String> reviews = getReviews(placeId);
 
                 dto.setName(
                     place.path("displayName").path("text").asText()
                 );
-        
+
                 dto.setAddress(
                     place.path("formattedAddress").asText()
                 );
-        
+
                 dto.setLatitude(
                     place.path("location").path("latitude").asDouble()
                 );
-        
+
                 dto.setLongitude(
                     place.path("location").path("longitude").asDouble()
                 );
-        
-        
+
                 dto.setUserRatingCount(
                     place.path("userRatingCount").asInt(0)
                 );
@@ -98,41 +95,32 @@ public class GooglePlacesService {
                 dto.setAnalysis(
                     novaService.analyzeDogParkReviews(placeId, reviews)
                 );
-        
+
                 parks.add(dto);
             }
-        
-            // sort by rating desc
-            // parks.sort(
-            //     Comparator.comparingDouble(DogParkDto::getRating)
-            //         .reversed()
-            // );
-        
-            // return top 5 to test the response
+
             return parks.stream().toList();
-        
+
         } catch (Exception e) {
-        
+
             throw new RuntimeException("Failed to parse Google Places response", e);
         }
     }
 
-
-    //get reviews for dog park
     public List<String> getReviews(String placeId) {
 
         String url = "https://places.googleapis.com/v1/places/" + placeId;
-    
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Goog-Api-Key", apiKey);
-    
+
         headers.set(
             "X-Goog-FieldMask",
             "reviews.text,reviews.rating"
         );
-    
+
         HttpEntity<String> entity = new HttpEntity<>(headers);
-    
+
         ResponseEntity<String> response =
                 restTemplate.exchange(
                         url,
@@ -140,30 +128,30 @@ public class GooglePlacesService {
                         entity,
                         String.class
                 );
-    
+
         try {
-    
+
             ObjectMapper mapper = new ObjectMapper();
-    
+
             JsonNode root = mapper.readTree(response.getBody());
-    
+
             List<String> reviews = new ArrayList<>();
-    
+
             for (JsonNode review : root.path("reviews")) {
-    
+
                 String text =
                     review
                         .path("text")
                         .path("text")
                         .asText();
-    
+
                 reviews.add(text);
             }
-    
+
             return reviews;
-    
+
         } catch (Exception e) {
-    
+
             throw new RuntimeException(
                 "Failed to parse reviews",
                 e

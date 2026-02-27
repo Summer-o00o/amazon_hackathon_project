@@ -30,7 +30,7 @@ public class SearchController {
     }
 
     @PostMapping("/search")
-    public List<DogParkDto> search(@RequestBody SearchRequestDto request) {
+    public List<ListingResponseDto> search(@RequestBody SearchRequestDto request) {
         String query = request.getQuery();
         SearchFiltersDto filters = novaService.parseUserQuery(query);
 
@@ -39,7 +39,6 @@ public class SearchController {
                 googlePlacesService.searchDogParks(filters.getLocation());
 
         // call Real Estate API
-        //return realEstateService.searchHouses(parks,2);
-        return parks;
+        return realEstateService.searchHouses(parks,2);
     }
 }

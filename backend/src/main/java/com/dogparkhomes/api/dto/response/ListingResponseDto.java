@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import java.io.Serializable;
 
 @Getter
 @Setter
-public class ListingResponseDto {
+public class ListingResponseDto implements Serializable {
+
+    private String id;
 
     private String address;
 
@@ -28,4 +31,6 @@ public class ListingResponseDto {
     private double nearestDogParkRating;
 
     private double distanceToDogPark;
+    
+    private String imageUrl;
 }

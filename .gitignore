@@ -20,6 +20,7 @@ Thumbs.db
 /backend/target/
 
 # Local data (images, caches, etc.)
+backend/src/main/resources/static/images/
 data/
 *.local.json
 
