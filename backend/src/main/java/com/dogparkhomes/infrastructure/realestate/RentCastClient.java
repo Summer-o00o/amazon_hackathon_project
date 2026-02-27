@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import com.dogparkhomes.infrastructure.image.ImageService;
+import com.dogparkhomes.infrastructure.google.StreetViewService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +24,12 @@ public class RentCastClient {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ImageService imageService;
+    private final StreetViewService streetViewService;
 
-    public RentCastClient(ImageService imageService) {
+    public RentCastClient(ImageService imageService,
+                          StreetViewService streetViewService) {
         this.imageService = imageService;
+        this.streetViewService = streetViewService;
     }
 
     @Cacheable(
@@ -70,10 +74,14 @@ public class RentCastClient {
                 dto.setLatitude(node.path("latitude").asDouble());
                 dto.setLongitude(node.path("longitude").asDouble());
 
-                //add image local url to the dto, or download the image from the url
-                String rentCastImageUrl = "https://picsum.photos/seed/" + dto.getId().hashCode() + "/800/600";
-                String localImageUrl = imageService.getOrDownloadImage(dto.getId(), rentCastImageUrl);
+                //get the street view image from the url
+                String localImageUrl = streetViewService.getStreetViewImage(dto.getId(), dto.getLatitude(), dto.getLongitude());
                 dto.setImageUrl(localImageUrl);
+                
+                //add image local url to the dto, or download the image from the url
+                // String rentCastImageUrl = "https://picsum.photos/seed/" + dto.getId().hashCode() + "/800/600";
+                // String localImageUrl = imageService.getOrDownloadImage(dto.getId(), rentCastImageUrl);
+                // dto.setImageUrl(localImageUrl);
                 
                 listings.add(dto);
             }
