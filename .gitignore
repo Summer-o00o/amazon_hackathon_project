@@ -23,12 +23,40 @@ Thumbs.db
 backend/src/main/resources/static/images/
 data/
 *.local.json
+dump.rdb
 
 # Environment / credentials (set via env vars or secret manager instead)
 .env
 .env.*
+!.env.example
 *.credentials.json
 aws-credentials.txt
 # Local override with real API keys (never commit)
 **/application-local.properties
+
+# -----------------------------------------------------------------------------
+# Frontend (Node / Vite / React)
+# -----------------------------------------------------------------------------
+node_modules/
+frontend/node_modules/
+
+# Vite / build output
+dist/
+frontend/dist/
+*.tsbuildinfo
+
+# Vite cache (when not under node_modules)
+.vite/
+frontend/.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Optional: test / coverage
+coverage/
+*.lcov
+.frontend-coverage/
 

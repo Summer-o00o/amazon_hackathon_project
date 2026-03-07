@@ -3,6 +3,7 @@ package com.dogparkhomes.api.controller;
 import com.dogparkhomes.api.dto.request.SearchRequestDto;
 import com.dogparkhomes.api.dto.response.ListingResponseDto;
 import com.dogparkhomes.api.dto.response.SearchFiltersDto;
+import com.dogparkhomes.api.dto.response.SearchResponseDto;
 import com.dogparkhomes.infrastructure.nova.NovaService;
 import com.dogparkhomes.infrastructure.google.GooglePlacesService;
 import com.dogparkhomes.infrastructure.realestate.RealEstateService;
@@ -30,7 +31,7 @@ public class SearchController {
     }
 
     @PostMapping("/search")
-    public List<ListingResponseDto> search(@RequestBody SearchRequestDto request) {
+    public SearchResponseDto search(@RequestBody SearchRequestDto request) {
         String query = request.getQuery();
         SearchFiltersDto filters = novaService.parseUserQuery(query);
 
@@ -39,6 +40,7 @@ public class SearchController {
                 googlePlacesService.searchDogParks(filters.getLocation());
 
         // call Real Estate API
-        return realEstateService.searchHouses(parks,2);
+        List<ListingResponseDto> listings = realEstateService.searchHouses(parks, 2);
+        return new SearchResponseDto(listings, parks);
     }
 }
